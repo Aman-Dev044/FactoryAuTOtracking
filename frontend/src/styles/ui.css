@@ -1,0 +1,2188 @@
+/* ==========================================================================
+   TrackBells ERP — Component Layer
+   Shell:  icon rail (64px) + contextual panel (212px) + topbar + content
+   Data:   one pro data-grid used by every data-heavy screen
+   Depends on the token layer in index.css.
+   ========================================================================== */
+
+:root,
+[data-theme='light'],
+[data-theme='dark'] {
+  --rail-width: 76px;
+  --panel-width: 212px;
+  --topbar-height: 52px;
+  --row-height: 40px;
+  --cell-lines: 3;
+  --cell-pad-y: 6px;
+  --grid-fs: var(--fs-base);
+}
+
+/* Density has to change something that does not depend on cell content.
+   Row height alone was invisible — a <td>'s `height` is only a minimum, so any
+   cell that wraps past it wins. Padding and font size always apply, and the
+   line clamp then actually shortens tall cells. */
+[data-density='compact'] {
+  --row-height: 30px;
+  --cell-lines: 1;
+  --cell-pad-y: 2px;
+  --grid-fs: var(--fs-sm);
+}
+
+[data-density='comfortable'] {
+  --row-height: 54px;
+  --cell-lines: 6;
+  --cell-pad-y: 12px;
+  --grid-fs: var(--fs-base);
+}
+
+/* ==========================================================================
+   1. APP SHELL
+   ========================================================================== */
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+/* --- Icon rail ----------------------------------------------------------- */
+.rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--rail-width);
+  height: 100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  gap: 2px;
+  z-index: 120;
+}
+
+.rail-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.rail-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.rail-scroll {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+.rail-scroll::-webkit-scrollbar { display: none; }
+
+.rail-item {
+  position: relative;
+  width: 64px;
+  min-height: 52px;
+  padding: 7px 3px 6px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+}
+
+/* Shortened module name, so you can always see where you are */
+.rail-item .rail-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-item:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.rail-item.active {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.rail-item.active:hover {
+  background: var(--primary-dark);
+  color: var(--on-primary);
+}
+
+.rail-item .rail-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 2px solid var(--bg-sidebar);
+}
+
+.rail-item.active .rail-dot { border-color: var(--primary); }
+
+/* Utility buttons in the rail footer carry no label */
+.rail-item.compact {
+  min-height: 0;
+  height: 38px;
+  padding: 0;
+}
+
+.rail-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  width: 64px;
+  flex-shrink: 0;
+}
+
+/* --- Contextual panel ---------------------------------------------------- */
+.panel {
+  position: fixed;
+  top: 0;
+  left: var(--rail-width);
+  width: var(--panel-width);
+  height: 100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 110;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.panel-header {
+  height: var(--topbar-height);
+  flex-shrink: 0;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+
+.panel-header .brand-name {
+  font-family: var(--font-display);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panel-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 8px;
+}
+
+.panel-group-title {
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0 8px;
+  margin: 14px 0 6px;
+}
+
+.panel-group-title:first-child { margin-top: 0; }
+
+.panel-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: var(--fs-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  margin-bottom: 1px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  white-space: nowrap;
+  position: relative;
+}
+
+.panel-item:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+/* The rail marks the module with a solid fill; the page inside it reads as a
+   tint + accent bar, so the two levels never merge into one indigo blob. */
+.panel-item.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.panel-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 0 3px 3px 0;
+  background: var(--primary);
+}
+
+.panel-item.active:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.panel-item .icon {
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.panel-item > span:not(.badge) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panel-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.panel-item .badge {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.panel-footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  padding: 8px;
+}
+
+/* --- Main column --------------------------------------------------------- */
+.shell-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: calc(var(--rail-width) + var(--panel-width));
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.shell-main.no-panel {
+  margin-left: var(--rail-width);
+}
+
+/* --- Topbar -------------------------------------------------------------- */
+.topbar {
+  height: var(--topbar-height);
+  flex-shrink: 0;
+  background: var(--bg-navbar);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 0 18px;
+  position: sticky;
+  top: 0;
+  z-index: 60;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Breadcrumb */
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.crumbs .sep {
+  color: var(--text-ghost);
+  flex-shrink: 0;
+}
+
+.crumbs .crumb-current {
+  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ⌘K trigger */
+.cmdk-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 10px;
+  min-width: 190px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-ghost);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.cmdk-trigger:hover {
+  border-color: var(--border-strong);
+  color: var(--text-muted);
+}
+
+.cmdk-trigger kbd {
+  margin-left: auto;
+  font-family: var(--font-body);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-control);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  font-size: 1.05rem;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-fast);
+}
+
+.icon-btn:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.icon-btn .dot-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 2px solid var(--bg-navbar);
+}
+
+/* ==========================================================================
+   2. PAGE PRIMITIVES
+   ========================================================================== */
+.page {
+  flex: 1;
+  min-width: 0;
+  padding: 20px 22px 40px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: var(--fs-base);
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.section {
+  margin-bottom: 22px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.section-head h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+/* Surface */
+.surface {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.surface-pad { padding: 18px; }
+
+/* ==========================================================================
+   3. STAT TILES
+   ========================================================================== */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tile {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-xs);
+  transition: var(--transition);
+  min-width: 0;
+}
+
+.tile:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.tile-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tile-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  background: var(--primary-soft);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.tile-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile-value {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tile-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.tile-delta.up { color: var(--success); }
+.tile-delta.down { color: var(--danger); }
+.tile-delta.flat { color: var(--text-ghost); }
+
+/* ==========================================================================
+   4. TOOLBAR (search + filters + actions)
+   ========================================================================== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.toolbar-search {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 340px;
+}
+
+.toolbar-search input {
+  width: 100%;
+  height: 32px;
+  padding: 0 30px 0 32px;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: var(--fs-base);
+  transition: var(--transition-fast);
+}
+
+.toolbar-search input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--ring-focus);
+}
+
+.toolbar-search .search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-ghost);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.toolbar-search .clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-ghost);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  padding: 2px;
+}
+
+.toolbar-search .clear-btn:hover { color: var(--text-primary); }
+
+.toolbar-spacer { flex: 1; }
+
+/* Filter chips */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.chip.active {
+  background: var(--primary-soft);
+  border-color: var(--border-primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.chip .chip-count {
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  padding: 0 5px;
+  border-radius: var(--radius-control);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.chip.active .chip-count {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.chip-group {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Density switch */
+.density-switch {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.density-switch button {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.density-switch button.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   5. DATA GRID
+   ========================================================================== */
+.grid-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.grid-scroll {
+  overflow: auto;
+  max-height: var(--grid-max-height, none);
+  -webkit-overflow-scrolling: touch;
+}
+
+table.grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--grid-fs, var(--fs-base));
+}
+
+table.grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: left;
+  padding: 0 14px;
+  height: 36px;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+
+table.grid thead th.sortable { cursor: pointer; }
+table.grid thead th.sortable:hover { color: var(--text-primary); }
+
+table.grid thead th .th-inner {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+table.grid thead th .sort-arrow {
+  opacity: 0.35;
+  font-size: 0.85rem;
+  display: inline-flex;
+}
+
+table.grid thead th.sorted .sort-arrow {
+  opacity: 1;
+  color: var(--primary);
+}
+
+table.grid thead th.num,
+table.grid tbody td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+table.grid tbody td {
+  padding: var(--cell-pad-y) 14px;
+  height: var(--row-height);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+table.grid tbody tr:last-child td { border-bottom: none; }
+
+table.grid tbody tr { transition: background 0.1s ease; }
+
+table.grid tbody tr:hover td { background: var(--bg-card-hover); }
+
+table.grid tbody tr.clickable { cursor: pointer; }
+
+table.grid tbody tr.selected td {
+  background: var(--primary-soft);
+}
+
+table.grid td.cell-primary {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+table.grid .col-check {
+  width: 38px;
+  padding-left: 14px;
+}
+
+table.grid .col-check input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  display: block;
+}
+
+
+/* A long value (a remark, an address, a note) must not stretch the whole row.
+   It clamps to --cell-lines and the full text stays available on hover and in
+   the row's detail view. */
+table.grid tbody td .cell-body {
+  display: block;
+  min-width: 0;
+}
+
+table.grid tbody td .cell-body.clip {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--cell-lines, 3);
+  line-clamp: var(--cell-lines, 3);
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  /* line-clamp alone is unreliable once a cell nests block elements, so cap
+     the height outright — this is what actually keeps rows even. */
+  max-height: calc(var(--cell-lines, 3) * 1.55em + 2px);
+}
+
+/* Selection action bar */
+.grid-selection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: var(--primary-soft);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-sm);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.grid-selection .spacer { flex: 1; }
+
+/* Footer / pagination */
+.grid-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.pager button {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.pager button:hover:not(:disabled) {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.pager button.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.pager button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   6. EMPTY / LOADING STATES
+   ========================================================================== */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-subtle);
+  color: var(--text-ghost);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+}
+
+.empty-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.empty-text {
+  font-size: var(--fs-sm);
+  max-width: 340px;
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle) 25%,
+    var(--bg-card-hover) 37%,
+    var(--bg-subtle) 63%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.3s linear infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   7. TABS (segmented)
+   ========================================================================== */
+.tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: calc(var(--radius-control) + 3px);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 6px 13px;
+  border-radius: var(--radius-control);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab:hover { color: var(--text-primary); }
+
+.tab.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-xs);
+}
+
+.tab .tab-count {
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  padding: 0 5px;
+  border-radius: var(--radius-control);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.tab.active .tab-count {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   8. DRAWER (record detail)
+   ========================================================================== */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 800;
+  animation: fadeIn 0.15s ease forwards;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(520px, 100vw);
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  z-index: 810;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.drawer.wide { width: min(760px, 100vw); }
+
+.drawer-head {
+  flex-shrink: 0;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.drawer-head h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+.drawer-head .drawer-sub {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.drawer-foot {
+  flex-shrink: 0;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  background: var(--bg-card);
+}
+
+/* Definition list used inside drawers */
+.dl {
+  display: grid;
+  grid-template-columns: minmax(110px, 38%) 1fr;
+  gap: 9px 14px;
+  font-size: var(--fs-base);
+}
+
+.dl dt {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.dl dd {
+  color: var(--text-primary);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   9. DIALOG
+   ========================================================================== */
+.dialog-scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 900;
+  overflow-y: auto;
+  animation: fadeIn 0.15s ease forwards;
+}
+
+.dialog {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: scaleIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dialog.sm { max-width: 400px; }
+.dialog.lg { max-width: 720px; }
+.dialog.xl { max-width: 960px; }
+
+.dialog-head {
+  flex-shrink: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dialog-head h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+.dialog-head .dialog-sub {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.dialog-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.dialog-foot {
+  flex-shrink: 0;
+  padding: 13px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  background: var(--bg-card);
+}
+
+/* ==========================================================================
+   10. FORM GRID
+   ========================================================================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.form-grid .span-2 { grid-column: span 2; }
+.form-grid .span-all { grid-column: 1 / -1; }
+
+.field { min-width: 0; }
+
+.field-label {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+
+.field-label .req { color: var(--danger); margin-left: 2px; }
+
+.field-control {
+  width: 100%;
+  height: 34px;
+  padding: 0 11px;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  transition: var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+textarea.field-control {
+  height: auto;
+  min-height: 78px;
+  padding: 9px 11px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+select.field-control {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+select.field-control option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.field-control:hover:not(:disabled) { border-color: var(--border-strong); }
+
+.field-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--ring-focus);
+}
+
+.field-control::placeholder { color: var(--text-ghost); }
+
+.field-control:disabled {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.field-control.invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+
+.field-hint {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.field-error {
+  font-size: var(--fs-xs);
+  color: var(--danger);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   11. COMMAND PALETTE
+   ========================================================================== */
+.cmdk-scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12vh 20px 20px;
+  animation: fadeIn 0.12s ease forwards;
+}
+
+.cmdk {
+  width: 100%;
+  max-width: 560px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 60vh;
+  animation: scaleIn 0.14s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cmdk-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  height: 50px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.cmdk-input-row .cmdk-icon {
+  color: var(--text-ghost);
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.cmdk-input-row input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+.cmdk-input-row input::placeholder { color: var(--text-ghost); }
+
+.cmdk-list {
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.cmdk-group-title {
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 10px 10px 5px;
+}
+
+.cmdk-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--fs-base);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cmdk-item .cmdk-item-icon {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-shrink: 0;
+}
+
+.cmdk-item.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.cmdk-item.active .cmdk-item-icon { color: var(--primary); }
+
+.cmdk-item .cmdk-item-hint {
+  margin-left: auto;
+  font-size: var(--fs-2xs);
+  color: var(--text-ghost);
+  flex-shrink: 0;
+}
+
+.cmdk-foot {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  padding: 7px 14px;
+  display: flex;
+  gap: 14px;
+  font-size: var(--fs-2xs);
+  color: var(--text-ghost);
+}
+
+.cmdk-foot kbd {
+  font-family: var(--font-body);
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: var(--bg-subtle);
+  margin-right: 3px;
+}
+
+/* ==========================================================================
+   12. RESPONSIVE
+   ========================================================================== */
+.shell-backdrop { display: none; }
+
+/* The shell hides the rail + panel at 900px, so the hamburger has to appear at
+   the same breakpoint — the legacy rule only showed it at 768px, which left
+   768–900px with no way to navigate. */
+.mobile-menu-btn { display: none; }
+
+@media (max-width: 1024px) {
+  .page { padding: 16px; }
+}
+
+/* A section with a single item needs no chooser on desktop — but on touch the
+   panel is the only place labels are visible, so it stays in the DOM. */
+@media (min-width: 901px) {
+  .panel.panel-solo { display: none; }
+}
+
+@media (max-width: 900px) {
+  .mobile-menu-btn { display: flex !important; }
+  /* On mobile the panel always slides in, even the solo variant. */
+  .panel.panel-solo { display: flex; }
+
+  .rail,
+  .panel {
+    transform: translateX(-100%);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .rail { z-index: 1210; }
+  .panel { z-index: 1200; }
+
+  .shell.nav-open .rail,
+  .shell.nav-open .panel {
+    transform: translateX(0);
+  }
+
+  .shell.nav-open .shell-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: var(--bg-overlay);
+    z-index: 1100;
+    animation: fadeIn 0.15s ease forwards;
+  }
+
+  .shell-main,
+  .shell-main.no-panel {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .cmdk-trigger {
+    min-width: 0;
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .cmdk-trigger span,
+  .cmdk-trigger kbd { display: none; }
+}
+
+/* --- Data grid on small screens ------------------------------------------
+   Below 640px a wide grid cannot be read by scrolling sideways, so each row
+   re-flows into a stacked card. Column labels come from `data-label`, which
+   DataTable writes onto every cell. */
+@media (max-width: 640px) {
+  .grid-wrap.responsive {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .grid-wrap.responsive .grid-scroll { overflow: visible; max-height: none; }
+
+  .grid-wrap.responsive table.grid,
+  .grid-wrap.responsive table.grid tbody,
+  .grid-wrap.responsive table.grid tr,
+  .grid-wrap.responsive table.grid td {
+    display: block;
+    width: 100%;
+  }
+
+  .grid-wrap.responsive table.grid thead { display: none; }
+
+  .grid-wrap.responsive table.grid tbody tr {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+    padding: 4px 2px;
+    margin-bottom: 10px;
+  }
+
+  .grid-wrap.responsive table.grid tbody tr.selected {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .grid-wrap.responsive table.grid tbody tr.selected td { background: transparent; }
+  .grid-wrap.responsive table.grid tbody tr:hover td { background: transparent; }
+
+  .grid-wrap.responsive table.grid tbody td {
+    height: auto;
+    min-height: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 7px 13px;
+    border-bottom: 1px solid var(--border-light);
+    text-align: right;
+  }
+
+  .grid-wrap.responsive table.grid tbody td:last-child { border-bottom: none; }
+
+  /* Cell label, rendered from data-label */
+  .grid-wrap.responsive table.grid tbody td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    text-align: left;
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    padding-top: 2px;
+  }
+
+  .grid-wrap.responsive table.grid tbody td[data-label='']::before { content: none; }
+
+  /* The lead cell reads as the card's heading */
+  .grid-wrap.responsive table.grid tbody td.cell-primary {
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    font-size: var(--fs-md);
+  }
+
+  .grid-wrap.responsive table.grid tbody td.num { text-align: right; }
+
+  /* The mobile card has room for the full value. */
+  .grid-wrap.responsive table.grid tbody td .cell-body.clip {
+    -webkit-line-clamp: 8;
+    line-clamp: 8;
+    max-height: none;
+  }
+
+  .grid-wrap.responsive table.grid .col-check {
+    justify-content: flex-start;
+    gap: 9px;
+  }
+
+  .grid-wrap.responsive .grid-foot {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    justify-content: center;
+  }
+
+  .grid-wrap.responsive .grid-selection {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-primary);
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page { padding: 12px; }
+  .stat-row { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+  .page-head { gap: 10px; }
+  .page-title { font-size: var(--fs-xl); }
+  .drawer { width: 100vw; }
+  .dl { grid-template-columns: 1fr; gap: 3px 0; }
+  .dl dd { margin-bottom: 8px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .span-2 { grid-column: span 1; }
+}
+
+
+/* ==========================================================================
+   19. SCROLL REVEAL (marketing pages)
+   Mirrors the brand site's entrance motion. Honours prefers-reduced-motion
+   via the global override, and starts visible if IntersectionObserver never
+   fires, so content can never be stranded invisible.
+   ========================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0s);
+  will-change: opacity, transform;
+}
+
+.reveal.from-left  { transform: translateX(-28px); }
+.reveal.from-right { transform: translateX(28px); }
+
+.reveal.shown {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; }
+}
+
+
+/* ==========================================================================
+   20. MARKETING MOTION
+   Richer entrance + idle motion for the public pages. Everything here is
+   decorative, so the global prefers-reduced-motion override disables it.
+   ========================================================================== */
+
+/* --- reveal variants ----------------------------------------------------- */
+.reveal.zoom      { transform: scale(0.94); }
+.reveal.from-up   { transform: translateY(-22px); }
+.reveal.blur-in   { filter: blur(8px); }
+.reveal.shown.blur-in { filter: blur(0); }
+
+.reveal { transition-property: opacity, transform, filter; }
+
+/* --- idle float on the hero artwork -------------------------------------- */
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+
+.float-slow { animation: floatY 6s ease-in-out infinite; }
+
+/* Pause the float while the card is hovered, so it is not a moving target. */
+.float-slow:hover { animation-play-state: paused; }
+
+/* --- drifting background blobs ------------------------------------------- */
+@keyframes drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(28px, -22px) scale(1.06); }
+  66%  { transform: translate(-22px, 18px) scale(0.96); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  animation: drift 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.blob.b2 { animation-duration: 24s; animation-direction: reverse; }
+.blob.b3 { animation-duration: 30s; animation-delay: -6s; }
+
+/* --- card lift ------------------------------------------------------------ */
+.lift {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s ease;
+}
+
+.lift:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-primary);
+}
+
+/* The icon chip inside a lifting card reacts too. */
+.lift .chip-icon { transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+.lift:hover .chip-icon { transform: scale(1.1) rotate(-6deg); }
+
+/* --- arrow link ----------------------------------------------------------- */
+.arrow-link svg {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arrow-link:hover svg { transform: translateX(5px); }
+
+/* --- animated underline for nav links ------------------------------------- */
+.nav-link {
+  position: relative;
+  padding-bottom: 3px;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  border-radius: 2px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* --- pipeline connector draw --------------------------------------------- */
+.connector {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+.reveal.shown .connector,
+.connector.shown { transform: scaleX(1); }
+
+/* --- soft pulse ring on the hero badge ------------------------------------ */
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 40%, transparent); }
+  70%  { box-shadow: 0 0 0 14px color-mix(in srgb, var(--primary) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 0%, transparent); }
+}
+
+.pulse-ring { animation: pulseRing 2.6s ease-out infinite; }
+
+/* --- marquee for the trust strip ------------------------------------------ */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 26s linear infinite;
+}
+
+.marquee-mask:hover .marquee-track { animation-play-state: paused; }
+
+.marquee-mask {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-slow,
+  .blob,
+  .pulse-ring,
+  .marquee-track { animation: none !important; }
+  .connector { transform: none; }
+}
+
+/* ==========================================================================
+   21. MODULE WHEEL
+   Eight modules orbiting a static brand centre. The ring turns slowly; each
+   item's content counter-rotates at the same speed, so labels never end up
+   upside down.
+   ========================================================================== */
+.wheel {
+  position: relative;
+  width: min(560px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  --wheel-spin: 72s;
+}
+
+.wheel-ring {
+  position: absolute;
+  inset: 0;
+  animation: wheelSpin var(--wheel-spin) linear infinite;
+  will-change: transform;
+}
+
+.wheel:hover .wheel-ring,
+.wheel:hover .wheel-item-inner { animation-play-state: paused; }
+
+@keyframes wheelSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes wheelSpinBack {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+/* Placing an item on the circle.
+   A percentage inside `translate()` resolves against the ELEMENT's own box,
+   not its parent — `translate(34%)` on a 24%-wide item produced an 8% orbit
+   and buried every module under the hub. So each item is instead an "arm"
+   spanning the whole wheel that simply rotates; the box rides at the top of
+   that arm and un-rotates itself to stay upright.
+
+   With item 24% and a 4% inset from the top edge:
+     orbit radius  = 50 - (4 + 24/2)              = 34.0%
+     neighbour gap = 2 * 34 * sin(22.5deg) - 24   =  2.0%
+     gap to hub    = 34 - 12 - 15                 =  7.0%
+     outer edge    = 34 + 12                      = 46.0%  */
+.wheel-item {
+  position: absolute;
+  inset: 0;
+  transform: rotate(var(--angle));
+  pointer-events: none;
+}
+
+.wheel-item-pos {
+  position: absolute;
+  top: var(--orbit-inset, 4%);
+  left: 50%;
+  width: 24%;
+  aspect-ratio: 1;
+  /* cancel the arm's rotation so the box itself sits upright */
+  transform: translateX(-50%) rotate(calc(-1 * var(--angle)));
+  pointer-events: auto;
+}
+
+.wheel-item-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+  padding: 6px;
+  background: var(--bg-card);
+  border: 2.5px solid var(--tone, var(--primary));
+  box-shadow: var(--shadow-sm);
+  /* cancels the ring's rotation, so the label is always the right way up */
+  animation: wheelSpinBack var(--wheel-spin) linear infinite;
+  will-change: transform;
+  transition: box-shadow 0.25s ease;
+}
+
+.wheel-item-pos:hover .wheel-item-inner {
+  box-shadow: var(--shadow-lg);
+}
+
+.wheel-item-inner .wheel-icon {
+  font-size: clamp(0.9rem, 2.2vw, 1.25rem);
+  color: var(--tone, var(--primary));
+  display: flex;
+}
+
+.wheel-item-inner .wheel-label {
+  font-size: clamp(7.5px, 1.3vw, 10px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+/* The step number rides the outer edge of each item. */
+.wheel-num {
+  position: absolute;
+  top: -12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--tone, var(--primary));
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-primary);
+}
+
+/* Static hub — it must not turn, so it sits outside .wheel-ring. */
+.wheel-hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  text-align: center;
+}
+
+.wheel-hub img {
+  max-width: 92%;
+  max-height: 64%;
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel-ring,
+  .wheel-item-inner { animation: none !important; }
+}
+
+@media (max-width: 520px) {
+  /* Fewer pixels to work with, so trade a little neighbour gap for legibility. */
+  .wheel-item-pos { width: 28%; top: 2%; }
+  .wheel-num { width: 19px; height: 19px; font-size: 10px; }
+}
+
+
+/* ==========================================================================
+   22. BACKGROUND RIBBONS
+   One continuous layer behind the whole marketing page, not per section, so
+   the curves run unbroken from the hero down to the footer.
+   ========================================================================== */
+.page-ribbons {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* The ribbon layer is positioned, so in-flow sections would paint beneath it.
+   Lift the page's own blocks above it. <nav> is left out deliberately — it is
+   position:sticky with its own z-index, and forcing position:relative here
+   would break the sticky header. */
+.landing-shell > section,
+.landing-shell > footer,
+.landing-shell > div:not(.page-ribbons) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Stretched to the full document height. `preserveAspectRatio="none"` would
+   normally squash the stroke too, so every path carries
+   vector-effect="non-scaling-stroke" to keep an even width at any page length. */
+.page-ribbons svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: ribbonDrift 48s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+@keyframes ribbonDrift {
+  0%   { transform: translateX(0)    scaleX(1); }
+  50%  { transform: translateX(-2.5%) scaleX(1.05); }
+  100% { transform: translateX(0)    scaleX(1); }
+}
+
+/* Small confetti dots scattered over the hero, like the brand site's accents */
+.speck {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatY 7s ease-in-out infinite;
+}
+
+/* Section bands sit ON the ribbon layer, so they are tinted rather than
+   opaque — otherwise each band would cut the ribbons into stripes. */
+.band {
+  background: color-mix(in srgb, var(--bg-subtle) 86%, transparent);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-ribbons svg,
+  .speck { animation: none !important; }
+}
+
+
+/* ==========================================================================
+   23. MARKETING SECTIONS (public landing page)
+   Surfaces and patterns used only by the marketing pages. Everything here is
+   token-driven, so a tenant brand colour or a theme switch carries through
+   without a second definition.
+   ========================================================================== */
+
+/* --- faint blueprint grid behind a section -------------------------------- */
+.grid-bg { position: relative; isolation: isolate; }
+
+.grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--border-light) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse at 50% 38%, #000 6%, transparent 68%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 38%, #000 6%, transparent 68%);
+}
+
+/* --- module card: coloured top rule that draws in on hover ---------------- */
+.mod-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.mod-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--tone, var(--primary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mod-card:hover::before { transform: scaleX(1); }
+
+/* --- oversized ghost number on a step card -------------------------------- */
+.ghost-num {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  font-family: var(--font-display);
+  font-size: 5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--tone, var(--primary));
+  opacity: 0.09;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* --- FAQ: native <details>, no JS, keyboard accessible by default --------- */
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.faq-item[open] {
+  border-color: var(--border-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary:hover { color: var(--primary); }
+
+.faq-plus {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  color: var(--primary);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.faq-item[open] .faq-plus { transform: rotate(135deg); }
+
+.faq-answer {
+  padding: 0 18px 18px;
+  color: var(--text-muted);
+  font-size: var(--fs-md);
+  line-height: 1.68;
+}
+
+/* --- before / after comparison rows --------------------------------------- */
+.cmp-row {
+  transition: background 0.2s ease;
+}
+
+.cmp-row:hover { background: var(--bg-subtle); }
+
+/* --- headline span painted with the brand gradient ------------------------ */
+.grad-text {
+  background: linear-gradient(95deg, var(--primary), var(--c-amber) 55%, var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --- mock panel chrome used by the feature screenshots -------------------- */
+.mini-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  user-select: none;
+}
+
+.mini-panel-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-subtle);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mini-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* --- link column in the footer -------------------------------------------- */
+.link-col a {
+  color: inherit;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+
+.link-col a:hover {
+  color: #fff;
+  padding-left: 4px;
+}
+
+/* --- role chip ------------------------------------------------------------ */
+.role-card {
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.24s ease,
+              background 0.24s ease;
+}
+
+.role-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-primary);
+  background: var(--bg-card);
+}
+
+/* --- alternating feature rows --------------------------------------------
+   The artwork swaps sides from 900px up. Below that the grid is a single
+   column and the copy always reads first, whichever way the row alternates. */
+@media (min-width: 900px) {
+  .row-flip > *:first-child { order: 2; }
+  .row-flip > *:last-child  { order: 1; }
+}

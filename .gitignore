@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Secrets — keep .env.example files only
+.env
+.env.*
+!.env.example
+credentials.html
+
+# Build output
+frontend/build/
+web/.next/
+web/out/
+
+# User uploads (customer documents) — keep the folder only
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Logs / OS
+*.log
+.DS_Store
+Thumbs.db

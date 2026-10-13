@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrackBells Drag Chain Factory - ERP Operations Guide</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --primary-glow: rgba(249, 115, 22, 0.05);
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+      --radius: 12px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: var(--primary);
+      margin: 16px auto 0;
+      border-radius: 2px;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 70%, var(--primary-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-top: 8px;
+    }
+
+    .section-desc {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-desc h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    /* Grid Layout */
+    .roles-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .roles-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .roles-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Role Card */
+    .role-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .role-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(249, 115, 22, 0.25);
+    }
+
+    .role-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .role-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .role-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+
+    .role-body {
+      padding: 24px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .info-section {
+      background-color: var(--bg-primary);
+      border-radius: 8px;
+      padding: 14px;
+      border-left: 4px solid var(--border);
+    }
+
+    .info-section.accent-section {
+      border-left-color: var(--primary);
+      background-color: var(--primary-glow);
+    }
+
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-content {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Comparison Table Section */
+    .table-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 40px;
+      overflow-x: auto;
+    }
+
+    .table-section h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    .matrix-table th {
+      background: var(--bg-primary);
+      padding: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+    }
+
+    .matrix-table td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text-secondary);
+    }
+
+    .matrix-table tr:hover {
+      background-color: var(--bg-primary);
+    }
+
+    .example-tag {
+      background-color: #f1f5f9;
+      color: #475569;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-family: monospace;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <header>
+      <h1>TrackBells Drag Chain Factory Operations Guide</h1>
+      <p class="subtitle">Official ERP Role Responsibilities & Database Flow Matrix</p>
+    </header>
+
+    <div class="section-desc">
+      <h2>Project Scope & Production Environment</h2>
+      <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+        This document represents the <strong>live production roles and data workflows</strong> configured in the
+        TrackBells Drag Chain ERP system. It outlines the specific capabilities of each of the 6 roles implemented in
+        the codebase (Gate Guard, Supervisor, Quality Checker, Store Manager, Sales Officer, and System Admin) for
+        processing raw materials (Nylon Granules, Steel Pins, Links) into finished drag chains (Models: STR-35 and
+        STR-26).
+      </p>
+    </div>
+
+    <div class="roles-grid">
+
+      <!-- 1. Gate Guard -->
+      <div class="role-card" style="border-top: 4px solid #00b7c3;">
+        <div class="role-header">
+          <div class="role-icon" style="background-color: rgba(0, 183, 195, 0.1); color: #00b7c3;">🚛</div>
+          <div>
+            <div class="role-title" style="color: #00b7c3;">Gate Guard</div>
+            <div class="badge">Inward Gate Registry</div>
+          </div>
+        </div>
+        <div class="role-body">
+          <div class="info-section">
+            <div class="section-title">👤 Core Duty</div>
+            <div class="section-content">Log incoming supply vehicles carrying raw materials at the factory entry gate.
+            </div>
+          </div>
+          <div class="info-section accent-section">
+            <div class="section-title">📝 Data Added</div>
+            <div class="section-content">
+              <strong>Inward Gate Log:</strong> Invoice/Bill No., Vendor Name, Vendor Contact, Material Type (<span
+                class="example-tag">Nylon Granules</span>, <span class="example-tag">Steel Pins</span>, etc.), Quantity,
+              Unit, Driver Name, and scanned Invoice Document.
+            </div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">👁️ Visibility</div>
+            <div class="section-content">Directly appears on the <strong>Supervisor</strong> dashboard (for physical
+              verification) and the <strong>Store Manager</strong> dashboard in real-time.</div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">⚡ Action Taker</div>
+            <div class="section-content"><strong>Supervisor</strong> reviews the entry to either <strong>Approve
+                (Pass)</strong> or <strong>Reject</strong> the gate inward log.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Supervisor -->
+      <div class="role-card" style="border-top: 4px solid #107c41;">
+        <div class="role-header">
+          <div class="role-icon" style="background-color: rgba(16, 124, 65, 0.1); color: #107c41;">⚙️</div>
+          <div>
+            <div class="role-title" style="color: #107c41;">Supervisor</div>
+            <div class="badge">Production & Machinery</div>
+          </div>
+        </div>
+        <div class="role-body">
+          <div class="info-section">
+            <div class="section-title">👤 Core Duty</div>
+            <div class="section-content">Manage moulding & extrusion machines, approve gate entries, and log daily
+              production targets.</div>
+          </div>
+          <div class="info-section accent-section">
+            <div class="section-title">📝 Data Added</div>
+            <div class="section-content">
+              <strong>Production Log:</strong> Assigns pending Sourcing Build Orders to specific machines (e.g., <span
+                class="example-tag">Moulding Machine #1</span>) and logs daily manufacturing output (Shots Fired) and
+              raw material usage.
+            </div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">👁️ Visibility</div>
+            <div class="section-content">Dispatched finished products are visible as Work-in-Progress (WIP) on the
+              <strong>Store Manager</strong> dashboard for godown sorting.
+            </div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">⚡ Action Taker</div>
+            <div class="section-content"><strong>Store Manager</strong> receives the WIP dispatch and completes the
+              assembly step to increment finished goods stock.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Quality Checker -->
+      <div class="role-card" style="border-top: 4px solid #c43e1c;">
+        <div class="role-header">
+          <div class="role-icon" style="background-color: rgba(196, 62, 28, 0.1); color: #c43e1c;">🔍</div>
+          <div>
+            <div class="role-title" style="color: #c43e1c;">Quality Checker</div>
+            <div class="badge">QC Inspections</div>
+          </div>
+        </div>
+        <div class="role-body">
+          <div class="info-section">
+            <div class="section-title">👤 Core Duty</div>
+            <div class="section-content">Audit arriving raw materials for defects and upload supplier invoices for
+              verification.</div>
+          </div>
+          <div class="info-section accent-section">
+            <div class="section-title">📝 Data Added</div>
+            <div class="section-content">
+              <strong>QC Invoice Log:</strong> Invoice Number, Vendor Name, Total Quantity, Defective Quantity, Rejected
+              Quantity, Quality Score (out of 100), comments, and uploaded Invoice Document.
+            </div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">👁️ Visibility</div>
+            <div class="section-content">Appears in the QC Verification queue of both the <strong>Sales Officer</strong>
+              and <strong>Store Manager</strong> dashboards.</div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">⚡ Action Taker</div>
+            <div class="section-content">
+              <strong>Store Manager</strong> or <strong>Sales Officer</strong> clicks <strong>Verify</strong>. <br>
+              <em>* Compliance Rule: The Quality Checker is blocked from verifying their own logs to prevent
+                collusion.</em>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Store Manager -->
+      <div class="role-card" style="border-top: 4px solid #f2c811;">
+        <div class="role-header">
+          <div class="role-icon" style="background-color: rgba(242, 200, 17, 0.1); color: #f2c811;">📦</div>
+          <div>
+            <div class="role-title" style="color: #f2c811;">Store Manager</div>
+            <div class="badge">Godown & Inventory</div>
+          </div>
+        </div>
+        <div class="role-body">
+          <div class="info-section">
+            <div class="section-title">👤 Core Duty</div>
+            <div class="section-content">Manage Godown warehouse inventory (Racks/Bins), assemble products, and track
+              stock shortages.</div>
+          </div>
+          <div class="info-section accent-section">
+            <div class="section-title">📝 Data Added</div>
+            <div class="section-content">
+              <strong>Warehouse Logs & Shortages:</strong> Assembly details (rack/bin locations assigned to items) and
+              registers Shortage Logs for materials running low.
+            </div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">👁️ Visibility</div>
+            <div class="section-content">Unified stock counts and shortage alerts are instantly visible on the
+              <strong>Sales Officer</strong> and <strong>Supervisor</strong> dashboards.
+            </div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">⚡ Action Taker</div>
+            <div class="section-content"><strong>Sales Officer</strong> reviews shortage reports and places raw material
+              Purchase Orders.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Sales Officer -->
+      <div class="role-card" style="border-top: 4px solid #a855f7;">
+        <div class="role-header">
+          <div class="role-icon" style="background-color: rgba(168, 85, 247, 0.1); color: #a855f7;">🛒</div>
+          <div>
+            <div class="role-title" style="color: #a855f7;">Sales Officer</div>
+            <div class="badge">Sales & Sourcing</div>
+          </div>
+        </div>
+        <div class="role-body">
+          <div class="info-section">
+            <div class="section-title">👤 Core Duty</div>
+            <div class="section-content">Create customer build orders, place procurement purchase orders, and verify QC
+              invoices.</div>
+          </div>
+          <div class="info-section accent-section">
+            <div class="section-title">📝 Data Added</div>
+            <div class="section-content">
+              <strong>Order Management & Procurement:</strong> Creates Build Orders for finished drag chains (e.g.,
+              <span class="example-tag">STR-35 Chain - 500m</span>) and issues Purchase Orders for shortage materials.
+            </div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">👁️ Visibility</div>
+            <div class="section-content">Build Orders populate the <strong>Supervisor's</strong> queue; Purchase
+              Orders/Shortages are shared with the <strong>Store Manager</strong>.</div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">⚡ Action Taker</div>
+            <div class="section-content">
+              - <strong>Supervisor</strong> starts production on the Build Order.<br>
+              - <strong>Sales Officer</strong> dispatches completed orders, auto-deducting stock.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. System Admin -->
+      <div class="role-card" style="border-top: 4px solid #64748b;">
+        <div class="role-header">
+          <div class="role-icon" style="background-color: rgba(100, 116, 139, 0.1); color: #64748b;">🛡️</div>
+          <div>
+            <div class="role-title" style="color: #64748b;">System Admin</div>
+            <div class="badge">Platform Control</div>
+          </div>
+        </div>
+        <div class="role-body">
+          <div class="info-section">
+            <div class="section-title">👤 Core Duty</div>
+            <div class="section-content">Manage organization branding settings, update styling parameters, and manage
+              user accounts.</div>
+          </div>
+          <div class="info-section accent-section">
+            <div class="section-title">📝 Data Added</div>
+            <div class="section-content">
+              <strong>Configurations & Users:</strong> Creates and deactivates users, manages permissions, sets primary
+              theme colors, and configures active sidebar menu visibility options.
+            </div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">👁️ Visibility</div>
+            <div class="section-content">Branding options and page layouts dynamically update the theme configuration
+              context across all users' screens.</div>
+          </div>
+          <div class="info-section">
+            <div class="section-title">⚡ Action Taker</div>
+            <div class="section-content">Changes made by the Admin immediately enforce access permissions and style
+              branding globally.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Comparative Flow Matrix Table -->
+    <div class="table-section">
+      <h2>ERP Database Flow & Lifecycle Matrix</h2>
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>Initiating Role (Created By)</th>
+            <th>Logged Transaction (Data Record)</th>
+            <th>Target Dashboards (Visible To)</th>
+            <th>Assigned Responder (Action Taker)</th>
+            <th>Workflow & Database Outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Gate Guard</strong></td>
+            <td>Gate Inward Log (e.g. <span class="example-tag">Nylon Granules - 1000 kg</span>)</td>
+            <td>Supervisor, Store Manager</td>
+            <td><strong>Supervisor</strong> (Approves/Passes log)</td>
+            <td>Records the supply vehicle presence; sets inward status to `passed` for physical receipt.</td>
+          </tr>
+          <tr>
+            <td><strong>Sales Officer</strong></td>
+            <td>Build Order (e.g. <span class="example-tag">Drag Chain STR-35 - 300 pcs</span>)</td>
+            <td>Supervisor, Store Manager</td>
+            <td><strong>Supervisor</strong> (Assigns machine & runs build)</td>
+            <td>Sourcing request is registered; sets machine to `running` state and locks production target.</td>
+          </tr>
+          <tr>
+            <td><strong>Supervisor</strong></td>
+            <td>Daily Production Dispatch (output items from machine)</td>
+            <td>Store Manager</td>
+            <td><strong>Store Manager</strong> (Completes Assembly)</td>
+            <td>Generates Work-in-Progress (WIP) logs; moves inventory into store warehouse queue.</td>
+          </tr>
+          <tr>
+            <td><strong>Quality Checker</strong></td>
+            <td>QC Invoice Log (e.g. scanned tax invoice document)</td>
+            <td>Sales Officer, Store Manager</td>
+            <td><strong>Sales Officer</strong> or <strong>Store Manager</strong></td>
+            <td>Uploads invoice file and quality score. Once verified, increments corresponding raw material inventory
+              levels.</td>
+          </tr>
+          <tr>
+            <td><strong>Store Manager</strong></td>
+            <td>Inventory Shortage Log (e.g. <span class="example-tag">Steel Pins Low Stock</span>)</td>
+            <td>Sales Officer, Supervisor</td>
+            <td><strong>Sales Officer</strong> (Issues PO)</td>
+            <td>Notifies sourcing team of stock deficit; triggers external vendor purchase order flow.</td>
+          </tr>
+          <tr>
+            <td><strong>Store Manager</strong></td>
+            <td>WIP Assembly Completion (assigned to Racks/Bins)</td>
+            <td>Sales Officer, Admin</td>
+            <td><strong>Sales Officer</strong> (Dispatches Finished Order)</td>
+            <td>Updates customer order state to `Ready`; increments finished goods stock, then decrements on dispatch.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Footer -->
+    <footer
+      style="margin-top: 50px; text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0; border-top: 1px solid var(--border);">
+      TrackBells Drag Chain ERP Workflow Guide • Codebase Verified Operations • © 2026
+    </footer>
+
+  </div>
+  <script>
+    (function () {
+      var w = document.createElement('script');
+      w.src = 'http://localhost:3000/widget.js';
+      w.setAttribute('data-agent-id', '6a96893fed08dcb2e4a7fa81');
+      w.async = true;
+      document.body.appendChild(w);
+    })();
+  </script>
+</body>
+
+</html>
