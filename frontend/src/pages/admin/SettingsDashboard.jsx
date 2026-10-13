@@ -33,7 +33,7 @@ const getImageUrl = (url) => {
       return `${base}${url}`;
     }
     if (window.location.port) {
-      return `${window.location.protocol}//${window.location.hostname}:9898${url}`;
+      return `${window.location.protocol}//${window.location.hostname}:6465${url}`;
     } else {
       return `${window.location.origin}/api${url}`;
     }

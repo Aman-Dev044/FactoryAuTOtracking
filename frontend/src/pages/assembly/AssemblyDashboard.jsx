@@ -18,12 +18,12 @@ import {
   Button, Badge, Tabs, EmptyState,
 } from '../../components/ui';
 
-const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:9898` : window.location.origin);
+const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:6465` : window.location.origin);
 
 const getMediaFullUrl = (url) => {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-  const base = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:9898` : window.location.origin);
+  const base = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:6465` : window.location.origin);
   const cleanBase = base.replace(/\/api\/?$/, '');
   const cleanUrl = url.startsWith('/') ? url : `/${url}`;
   return `${cleanBase}${cleanUrl}`;

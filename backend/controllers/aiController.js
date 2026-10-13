@@ -18,8 +18,8 @@ exports.predictShots = async (req, res, next) => {
 
     // Call Python FastAPI service (usually running on port 8000 locally or internal docker network)
     // const pythonApiUrl = process.env.PYTHON_API_URL || 'http://127.0.0.1:8000';
-    // const pythonApiUrl = process.env.PYTHON_API_URL || 'http://localhost:8989';
-    const pythonApiUrl = process.env.PYTHON_API_URL || 'http://127.0.0.1:8989';
+    // const pythonApiUrl = process.env.PYTHON_API_URL || 'http://localhost:7475';
+    const pythonApiUrl = process.env.PYTHON_API_URL || 'http://127.0.0.1:7475';
 
     const response = await axios.post(`${pythonApiUrl}/predict/shots`, {
       model_number: modelNumber,
@@ -115,7 +115,7 @@ exports.chatWithAI = async (req, res, next) => {
     }
 
     // Default: Forward to Python AI service
-    const pythonApiUrl = process.env.PYTHON_API_URL || 'http://127.0.0.1:8989';
+    const pythonApiUrl = process.env.PYTHON_API_URL || 'http://127.0.0.1:7475';
     const response = await axios.post(`${pythonApiUrl}/chat/`, { message }, { timeout: 5000 });
 
     res.status(200).json({

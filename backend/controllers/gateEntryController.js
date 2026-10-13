@@ -558,7 +558,7 @@ exports.scanEBill = async (req, res, next) => {
       // If local text is empty and python service is configured, try python microservice
       if (!rawText) {
         try {
-          const pythonApiUrl = process.env.PYTHON_API_URL || 'http://127.0.0.1:8989';
+          const pythonApiUrl = process.env.PYTHON_API_URL || 'http://127.0.0.1:7475';
           const form = new FormData();
           form.append('file', fs.createReadStream(filePath), originalFilename);
           const aiRes = await axios.post(`${pythonApiUrl}/ocr/scan-invoice`, form, {

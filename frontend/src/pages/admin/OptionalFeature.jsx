@@ -9,7 +9,7 @@ import {
   Page, PageHeader, Surface, FormGrid, Field, Input, Button,
 } from '../../components/ui';
 
-const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:9898` : window.location.origin);
+const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:6465` : window.location.origin);
 
 const getImageUrl = (url) => {
   if (!url) return '';
@@ -20,7 +20,7 @@ const getImageUrl = (url) => {
       return `${base}${url}`;
     }
     if (window.location.port) {
-      return `${window.location.protocol}//${window.location.hostname}:9898${url}`;
+      return `${window.location.protocol}//${window.location.hostname}:6465${url}`;
     } else {
       return `${window.location.origin}/api${url}`;
     }

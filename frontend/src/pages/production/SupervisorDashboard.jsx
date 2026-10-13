@@ -20,8 +20,8 @@ import {
 } from '../../components/ui';
 
 // const SOCKET_URL = process.env.REACT_APP_API_URL || `http://${window.location.hostname}:5000`;
-// const SOCKET_URL = process.env.REACT_APP_API_URL || `http://localhost:9898`;
-const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:9898` : window.location.origin);
+// const SOCKET_URL = process.env.REACT_APP_API_URL || `http://localhost:6465`;
+const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:6465` : window.location.origin);
 
 /* ------------------------------------------------------------------ tokens */
 

@@ -14,7 +14,7 @@ const openapi = {
       description: "Production Server"
     },
     {
-      url: "http://localhost:9898/api",
+      url: "http://49.13.70.253:6465/api",
       description: "Local Development Server"
     }
   ],

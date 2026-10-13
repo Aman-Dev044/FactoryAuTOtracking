@@ -24,7 +24,7 @@ import {
   Button, Badge, EmptyState, Tabs,
 } from '../../components/ui';
 
-const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:9898` : window.location.origin);
+const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:6465` : window.location.origin);
 
 // Clean incremental radii list in steps of 5: 5, 10, 15, 20 ... up to 700
 const BENDING_RADII_OPTIONS = Array.from({ length: 140 }, (_, i) => String((i + 1) * 5));

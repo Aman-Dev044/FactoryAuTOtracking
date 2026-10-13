@@ -96,8 +96,8 @@ const server = http.createServer(app);
 const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS
   ? process.env.CORS_ALLOWED_ORIGINS.split(',')
   : [
-    "http://localhost:3000",
-    "http://localhost:3009"
+    "http://localhost:5455",
+    "http://49.13.70.253:5455"
   ];
 
 const io = new Server(server, {

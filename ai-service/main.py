@@ -19,10 +19,10 @@ if allowed_origins_env:
     allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 else:
     allowed_origins = [
-        "http://localhost:3000",
-        "http://localhost:3009",
-        "http://localhost:9898",
-        "http://127.0.0.1:9898"
+        "http://localhost:5455",
+        "http://49.13.70.253:5455",
+        "http://49.13.70.253:6465",
+        "http://127.0.0.1:6465"
     ]
 
 app.add_middleware(
@@ -48,4 +48,4 @@ async def root():
 
 if __name__ == "__main__":
     # uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-    uvicorn.run("main:app", host="0.0.0.0", port=8989, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=7475, reload=True)

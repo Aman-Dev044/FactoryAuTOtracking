@@ -4,7 +4,7 @@ import { useAuth } from './AuthContext';
 import { io } from 'socket.io-client';
 import { getCountryDetails } from '../config/countryConfig';
 
-const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:9898` : window.location.origin);
+const SOCKET_URL = process.env.REACT_APP_API_URL || (window.location.port ? `${window.location.protocol}//${window.location.hostname}:6465` : window.location.origin);
 
 const OrgContext = createContext(null);
 

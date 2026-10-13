@@ -52,7 +52,7 @@ const sendEmail = async ({ to, subject, html, orgId }) => {
     let logoContainerStyle = 'width:70px;height:70px;background:linear-gradient(135deg,#3b82f6,#a855f7);border-radius:18px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;';
 
     if (settings.logo && (settings.logo.startsWith('/') || settings.logo.startsWith('http'))) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const frontendUrl = process.env.FRONTEND_URL || 'http://49.13.70.253:5455';
       const absoluteLogoUrl = settings.logo.startsWith('/') ? `${frontendUrl}${settings.logo}` : settings.logo;
       logoHtml = `<img src="${absoluteLogoUrl}" alt="Logo" style="max-height:48px;max-width:180px;object-fit:contain;" />`;
       logoContainerStyle = 'margin:0 auto 24px;display:flex;align-items:center;justify-content:center;min-height:50px;';
@@ -176,7 +176,7 @@ const emailTemplates = {
     `
   }),
 
-  dispatchNotification: (dispatch, frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000') => {
+  dispatchNotification: (dispatch, frontendUrl = process.env.FRONTEND_URL || 'http://49.13.70.253:5455') => {
     const stageTitles = {
       assemble: '🔧 Assembly in Progress',
       packing: '📦 Order Packed & Ready',
@@ -312,7 +312,7 @@ const emailTemplates = {
     };
   },
 
-  outwardGateNotificationToAccounts: (entry, frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000') => {
+  outwardGateNotificationToAccounts: (entry, frontendUrl = process.env.FRONTEND_URL || 'http://49.13.70.253:5455') => {
     const resolveUrl = (url) => {
       if (!url) return '';
       if (url.startsWith('http://') || url.startsWith('https://')) return url;
