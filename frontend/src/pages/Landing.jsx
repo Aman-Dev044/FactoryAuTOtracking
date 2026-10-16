@@ -416,10 +416,10 @@ const PageRibbons = () => (
   <div className="page-ribbons" aria-hidden="true">
     <svg viewBox="0 0 1200 4000" preserveAspectRatio="none" fill="none">
       {[
-        { d: 'M1180 -40 C 820 420, 1180 900, 840 1380 C 520 1840, 1080 2260, 820 2760 C 600 3180, 1060 3500, 900 4040', stroke: 'var(--c-cyan)',  w: 150, o: 0.13 },
-        { d: 'M1320 140 C 980 620, 1300 1060, 980 1560 C 700 2000, 1220 2420, 960 2920 C 760 3320, 1180 3640, 1040 4060', stroke: 'var(--c-pink)',  w: 110, o: 0.10 },
+        { d: 'M1180 -40 C 820 420, 1180 900, 840 1380 C 520 1840, 1080 2260, 820 2760 C 600 3180, 1060 3500, 900 4040', stroke: 'var(--c-cyan)', w: 150, o: 0.13 },
+        { d: 'M1320 140 C 980 620, 1300 1060, 980 1560 C 700 2000, 1220 2420, 960 2920 C 760 3320, 1180 3640, 1040 4060', stroke: 'var(--c-pink)', w: 110, o: 0.10 },
         { d: 'M-120 -60 C 240 400, -80 880, 300 1340 C 620 1760, 60 2220, 340 2700 C 560 3100, 100 3460, 260 4040', stroke: 'var(--primary)', w: 130, o: 0.11 },
-        { d: 'M-260 220 C 120 700, -180 1120, 200 1600 C 500 2000, -60 2440, 220 2900 C 420 3260, 40 3620, 180 4060', stroke: 'var(--c-green)', w: 90,  o: 0.10 },
+        { d: 'M-260 220 C 120 700, -180 1120, 200 1600 C 500 2000, -60 2440, 220 2900 C 420 3260, 40 3620, 180 4060', stroke: 'var(--c-green)', w: 90, o: 0.10 },
       ].map((r, i) => (
         <path
           key={i}
@@ -439,11 +439,11 @@ const PageRibbons = () => (
 const Specks = () => (
   <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: -1, overflow: 'hidden' }}>
     {[
-      { t: '12%', l: '8%',  s: 8,  c: 'var(--primary)',  d: '0s' },
-      { t: '26%', l: '92%', s: 6,  c: 'var(--c-cyan)',   d: '1.2s' },
-      { t: '68%', l: '5%',  s: 10, c: 'var(--c-amber)',  d: '2.1s' },
-      { t: '80%', l: '88%', s: 7,  c: 'var(--c-green)',  d: '0.6s' },
-      { t: '45%', l: '48%', s: 5,  c: 'var(--c-pink)',   d: '1.8s' },
+      { t: '12%', l: '8%', s: 8, c: 'var(--primary)', d: '0s' },
+      { t: '26%', l: '92%', s: 6, c: 'var(--c-cyan)', d: '1.2s' },
+      { t: '68%', l: '5%', s: 10, c: 'var(--c-amber)', d: '2.1s' },
+      { t: '80%', l: '88%', s: 7, c: 'var(--c-green)', d: '0.6s' },
+      { t: '45%', l: '48%', s: 5, c: 'var(--c-pink)', d: '1.8s' },
     ].map((d, i) => (
       <span
         key={i}
@@ -461,14 +461,14 @@ const Specks = () => (
 
 /** The eight modules, alternating tone the way the brand diagram does. */
 const WHEEL = [
-  { icon: <LuShoppingCart />,   label: 'Sales & Orders',    tone: 'var(--primary)' },
-  { icon: <LuHandshake />,      label: 'CRM & Pipeline',    tone: 'var(--c-green)' },
-  { icon: <LuClipboardList />,  label: 'Purchase & Material', tone: 'var(--primary)' },
-  { icon: <LuCog />,            label: 'Production & Quality', tone: 'var(--c-green)' },
-  { icon: <LuBoxes />,          label: 'Inventory Control', tone: 'var(--primary)' },
-  { icon: <LuIndianRupee />,    label: 'Finance & Accounts', tone: 'var(--c-green)' },
-  { icon: <LuUsersRound />,     label: 'Payroll & HR',      tone: 'var(--primary)' },
-  { icon: <LuScanLine />,       label: 'Gate Management',   tone: 'var(--c-green)' },
+  { icon: <LuShoppingCart />, label: 'Sales & Orders', tone: 'var(--primary)' },
+  { icon: <LuHandshake />, label: 'CRM & Pipeline', tone: 'var(--c-green)' },
+  { icon: <LuClipboardList />, label: 'Purchase & Material', tone: 'var(--primary)' },
+  { icon: <LuCog />, label: 'Production & Quality', tone: 'var(--c-green)' },
+  { icon: <LuBoxes />, label: 'Inventory Control', tone: 'var(--primary)' },
+  { icon: <LuIndianRupee />, label: 'Finance & Accounts', tone: 'var(--c-green)' },
+  { icon: <LuUsersRound />, label: 'Payroll & HR', tone: 'var(--primary)' },
+  { icon: <LuScanLine />, label: 'Gate Management', tone: 'var(--c-green)' },
 ];
 
 /**
@@ -995,8 +995,8 @@ const Landing = () => {
           }}
         >
           <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
-            <a href="tel:+919915865939" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <LuPhone /> +91 99158 65939
+            <a href="tel:+91-7009496097" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <LuPhone /> +91-7009496097
             </a>
             <a href="mailto:info.cyberbells@gmail.com" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <LuMail /> info.cyberbells@gmail.com
@@ -2120,7 +2120,7 @@ const Landing = () => {
             <Reveal dir="from-left">
               <div style={{ display: 'grid', gap: 14 }}>
                 {[
-                  { icon: <LuPhone />, tone: 'primary', label: 'Call us', value: '+91 99158 65939', href: 'tel:+919915865939' },
+                  { icon: <LuPhone />, tone: 'primary', label: 'Call us', value: '+91-7009496097', href: 'tel:+91-7009496097' },
                   { icon: <LuMail />, tone: 'cyan', label: 'Email us', value: 'info.cyberbells@gmail.com', href: 'mailto:info.cyberbells@gmail.com' },
                   { icon: <LuClock />, tone: 'green', label: 'Working hours', value: 'Monday – Saturday, 9:30am – 6:30pm IST' },
                   { icon: <LuLifeBuoy />, tone: 'violet', label: 'Response time', value: 'We reply within one working day' },
@@ -2325,8 +2325,8 @@ const Landing = () => {
           <div className="link-col">
             <h4 style={{ color: '#fff', fontSize: 'var(--fs-base)', fontWeight: 700, marginBottom: 14 }}>Contact Info</h4>
             <div style={{ display: 'grid', gap: 10, fontSize: 'var(--fs-sm)' }}>
-              <a href="tel:+919915865939" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <LuPhone /> +91 99158 65939
+              <a href="tel:+91-7009496097" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <LuPhone /> +91-7009496097
               </a>
               <a href="mailto:info.cyberbells@gmail.com" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <LuMail /> info.cyberbells@gmail.com

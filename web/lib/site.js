@@ -26,8 +26,8 @@ export const site = {
   /** Used as the og:image. Replace with a purpose-made 1200x630 artwork. */
   ogImage: '/logo-mark.png',
 
-  phone: '+91 99158 65939',
-  phoneHref: 'tel:+919915865939',
+  phone: '+91-7009496097',
+  phoneHref: 'tel:+91-7009496097',
   email: 'info.cyberbells@gmail.com',
   hours: 'Mon – Sat, 9:30am – 6:30pm IST',
   country: 'IN',

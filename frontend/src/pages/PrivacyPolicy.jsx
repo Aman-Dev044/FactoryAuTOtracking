@@ -171,7 +171,7 @@ const PrivacyPolicy = () => {
         </p>
         <ul style={{ ...UL, listStyle: 'none', paddingLeft: 0 }}>
           <li style={LI}><strong>Email:</strong> <a href="mailto:info.cyberbells@gmail.com" style={{ color: 'var(--primary)' }}>info.cyberbells@gmail.com</a></li>
-          <li style={LI}><strong>Phone:</strong> +919915865939</li>
+          <li style={LI}><strong>Phone:</strong> +91-7009496097</li>
           <li style={LI}><strong>Company:</strong> Cyberbells ITES Services Pvt Ltd</li>
         </ul>
       </article>
